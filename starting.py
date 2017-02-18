@@ -1,15 +1,3 @@
-def MOVE(user_input):
-	if(user_input == "NORTH"):
-		print("You are going North")
-	elif(user_input == "NORTH"):
-		print("You are going East")
-	elif(user_input == "NORTH"):
-		print("You are going West")
-	elif(user_input == "NORTH"):
-		print("You are going South")
-	else:
-		print("error")
-
 #user_input = input("Please Enter a Direction:")
 
 #MOVE(user_input)
