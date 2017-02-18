@@ -18,13 +18,37 @@ class spider():
 	health = 5
 	power = 1
 	defense = 0
-	inventory = []
+	inventory = ["spider venom"]
 
 class orc():
-	health = 50
+	health = 20
 	power = 5
-	defense = 1
+	defense = 2
 	inventory = ["club"]
+
+class goblin():
+	health = 15
+	power = 4
+	defense = 1
+	inventory = ["healing potion"]
+
+class bat():
+	health = 10
+	power = 4
+	defense = 1
+	inventory = ["bat fang"]
+
+class rat():
+	health = 5
+	power = 3
+	defense = 0
+	inventory = ["rat tail"]
+
+class rocktopus():
+	health = 16
+	power = 6
+	defense = 3
+	inventory = ["obsidian shield"]
 
 
 class character ():
@@ -40,17 +64,20 @@ class character ():
 	flag3 = False
 	flag3_1 = False
 	flag4 = False
+	flag5 = False
 
 def reset_enemies():
 	mirror.health = 1
 	mirror.inventory = ['shard of glass']
 	spider.health = 5
 	spider.inventory = []
+	orc.health = 50
+	orc.inventory = ["club"]
 def areaOne(userInput):
 
 	room_inventory = ["shovel"]
 
-	if userInput.lower() == 'n':
+	if userInput.lower() == 'n' or 'north' or 'move n' or 'move north':
 		print("Entering Area Two")
 		return 2
 	elif userInput.lower() == 'health':
@@ -349,14 +376,79 @@ def areaSeven(userInput):
 	elif userInput.lower() == 'search':
 		print('You did not find anything')
 		return 7
-	elif userInput.lower() == 'look':
-		print('You did not see anything')
+	elif character.flag5 == False and userInput.lower() == 'look':
+		print('You see the entrance to a cave being "guarded" by a sleeping goblin')
 		return 7
+	elif character.flag5 == True and userInput.lower() == 'look':
+		print('You see the entrance to the cave being guarded by a dead goblin')
+	elif character.flag5 == False and userInput.lower() == 'enter cave':
+		print("The sound of your approach wakes the goblin!")
+		print("The goblin springs to action, landing the first strike on you for", goblin.power - character.defense, "damage!")
+		character.health -= goblin.power - character.defense
+		print('You are in combat with goblin')
+		character.previous_state = 7
+		return 103
+	elif character.flag5 == True and userInput.lower() == 'enter cave':
+		print("Entering Dungeon")
+		return 90	
+	elif userInput.lower() == 'attack goblin':
+		print('You are in combat with goblin')
+		character.previous_state = 7
+		return 103
 	else:
 	 	print("invalid input")
 	 	return 7
 	pass
 
+def combat_areaSeven_goblin(userInput):
+	incombat = True
+	while(incombat == True):
+		if userInput.lower() == 'attack':
+			print('You swing at the goblin with your', character.rightarm, 'dealing', character.power - goblin.defense, 'damage.')
+			goblin.health -= (character.power - goblin.defense)
+			
+			if(goblin.health <= 0):
+				print('You have defeated goblin')
+				character.flag5 = True
+				print('You find', goblin.inventory, 'on the body.')
+				character.inventory += goblin.inventory
+				print("Entering Dungeon")	
+				reset_enemies()
+				incombat = False
+				return character.previous_state
+			elif(goblin.health > 0):
+				print('The goblin attacks you dealing', goblin.power - character.defense, 'damage.')
+				character.health -= (goblin.power - character.defense)
+				return 103
+			elif(character.health <= 0):
+				print('You have died')
+				print('Game Over')
+			else:
+				return 103
+		elif userInput.lower() == 'run':
+			print('You manage to escape.')
+			print("Returning to area 7")	
+			incombat = False
+			return character.previous_state
+		else:
+			return 103
+
+def dungeoneOne_roomOne(userInput):
+	if userInput.lower() == 'n':
+		print("Entering Dungeon Room 2")
+		return 91
+	elif userInput.lower() == 's' or 'south' or 'exit' or 'leave' or 'move south':
+		return 7
+	elif userInput.lower() == 'search':
+		print('You did not find anything')
+		return 90
+	elif userInput.lower() == 'look':
+		print('You did not see anything')
+		return 90
+	else:
+		 print("invalid input")
+		 return 90
+	pass
 def areaEight(userInput):
 	if userInput.lower() == 'n':
 		print("Entering Area Nine")
@@ -397,9 +489,11 @@ dictionaryOfAreas = {
 	7: areaSeven,
 	8: areaEight,
 	9: areaNine,
+	90: dungeoneOne_roomOne,
 	100: combat_areaTwo_spider,
 	101: combat_areaOne_mirror,
-	102: combat_areaFive_orc
+	102: combat_areaFive_orc,
+	103: combat_areaSeven_goblin
 }
 
 def gameLoop():
