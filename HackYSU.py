@@ -45,9 +45,9 @@ class rat():
 	inventory = ["rat tail"]
 
 class rocktopus():
-	health = 16
+	health = 10
 	power = 6
-	defense = 3
+	defense = 4
 	inventory = ["obsidian shield"]
 
 
