@@ -1,0 +1,6 @@
+name = input ('What is your name, stranger? ')
+print ('The Ledgend of Glenn:' )
+print ('===================================================================')
+print ('A long time ago. In a forrest far, far away. ')
+print ('Omo Dittrich, the prince of darkness, stole the trinity of power. ' + '\n' + 'The princess Glenn had the thinity of wisdom. ' + '\n' + 'Before being caught, she divided it into eight units to hide it from Omo Dittrich ')
+print ('Find the 8 units ', name, 'and rescue her.')
