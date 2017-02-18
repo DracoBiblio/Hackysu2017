@@ -20,6 +20,12 @@ class spider():
 	defense = 0
 	inventory = []
 
+class orc():
+	health = 50
+	power = 5
+	defense = 1
+	inventory = ["club"]
+
 
 class character ():
 	health = 100
@@ -33,8 +39,13 @@ class character ():
 	flag2 = False
 	flag3 = False
 	flag3_1 = False
+	flag4 = False
 
-	previous_state = 1
+def reset_enemies():
+	mirror.health = 1
+	mirror.inventory = ['shard of glass']
+	spider.health = 5
+	spider.inventory = []
 def areaOne(userInput):
 
 	room_inventory = ["shovel"]
@@ -93,6 +104,7 @@ def combat_areaOne_mirror (userInput):
 					print('Game Over')
 				print('You find', mirror.inventory, 'on the body.')
 				character.inventory += mirror.inventory
+				reset_enemies()
 				incombat = False
 				return character.previous_state
 			elif(mirror.health > 0):
@@ -151,6 +163,8 @@ def combat_areaTwo_spider (userInput):
 				print('The spider is now a gross pile of guts')
 				print('You find', spider.inventory, 'on the body.')
 				character.inventory += spider.inventory
+				character.flag2 = True
+				reset_enemies()
 				incombat = False
 				return character.previous_state
 			elif(spider.health > 0):
@@ -173,7 +187,7 @@ def areaThree(userInput):
 
 	if userInput.lower() == 'n':
 		print("Entering Area Four. You see a Shop(shop), and a Blacksmith(blacksmith).")
-		return 3
+		return 4
 	elif character.rightarm == ['shovel'] and userInput.lower() == 'use shovel':
 		print('you create a hole')
 		character.flag3 = True
@@ -203,6 +217,12 @@ def areaThree(userInput):
 
 def areaFour(userInput):
 	if userInput.lower() == 'n':
+		if character.flag4 == False:
+			print("You are ambushed by an orc!")
+			print("The orc lands a pre-emptive strike for", orc.power - character.defense, "damage.")
+			print('You are in combat with orc')
+			character.previous_state = 5
+			return 102
 		print("Entering Area Five")
 		return 5
 	elif userInput.lower() == 'shop':
@@ -273,7 +293,40 @@ def areaFive(userInput):
 	 	print("invalid input")
 	 	return 5
 	pass
-
+def combat_areaFive_orc (userInput):
+	incombat = True
+	while(incombat == True):
+		character.flag4 = True
+		if userInput.lower() == 'attack':
+			print('You swing at', orc, 'with your', character.rightarm, 'dealing', character.power - orc.defense, 'damage.')
+			orc.health -= (character.power - orc.defense)
+			
+			if(orc.health <= 0):
+				print('You have defeated', orc)
+				character.flag1 = True
+				print('The orc collapses.')
+				print('You find', orc.inventory, 'on the body.')
+				character.inventory += orc.inventory
+				print("Entering Area Five")	
+				reset_enemies()
+				incombat = False
+				return character.previous_state
+			elif(orc.health > 0):
+				print(orc, 'Attacks you dealing', orc.power - character.defense, 'damage.')
+				character.health -= (orc.power - character.defense)
+				return 102
+			elif(character.health <= 0):
+				print('You have died')
+				print('Game Over')
+			else:
+				return 102
+		elif userInput.lower() == 'run':
+			print('You manage to escape.')
+			print("Entering Area Five")	
+			incombat = False
+			return character.previous_state
+		else:
+			return 102
 def areaSix(userInput):
 	if userInput.lower() == 'n':
 		print("Entering Area Seven")
@@ -345,7 +398,8 @@ dictionaryOfAreas = {
 	8: areaEight,
 	9: areaNine,
 	100: combat_areaTwo_spider,
-	101: combat_areaOne_mirror
+	101: combat_areaOne_mirror,
+	102: combat_areaFive_orc
 }
 
 def gameLoop():
